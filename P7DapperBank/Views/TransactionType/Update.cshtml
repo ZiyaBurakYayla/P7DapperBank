@@ -1,0 +1,27 @@
+@model P7DapperBank.Dtos.TransactionTypeDtos.GetByIdTransactionTypeDto
+@{ ViewData["Title"] = "İşlem Tipi Güncelle"; }
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">İşlem Tipi Güncelle</h1>
+        <p class="page-subtitle">#@Model.TypeId numaralı tip</p>
+    </div>
+    <a asp-action="Index" class="btn-secondary-custom"><i class="fa-solid fa-arrow-left"></i> Geri</a>
+</div>
+
+<div class="card form-page">
+    <div class="card-header"><i class="fa-solid fa-pen"></i> İşlem Tipi Bilgileri</div>
+    <div class="card-body">
+        <form asp-action="Update" method="post">
+            <input type="hidden" asp-for="TypeId" />
+            <div class="form-group">
+                <label class="form-label">Tip Adı</label>
+                <input asp-for="TypeName" class="form-control-custom" />
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn-primary-custom"><i class="fa-solid fa-check"></i> Güncelle</button>
+                <a asp-action="Index" class="btn-secondary-custom">İptal</a>
+            </div>
+        </form>
+    </div>
+</div>

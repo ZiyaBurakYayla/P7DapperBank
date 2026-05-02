@@ -1,0 +1,15 @@
+<div class="stat-card @ViewBag.ColorClass">
+    <div class="stat-card-body">
+        <div class="stat-card-info">
+            <p class="stat-card-label">@ViewBag.Title</p>
+            <h2 class="stat-card-value">@ViewBag.Value</h2>
+            @if (ViewBag.Subtitle != null)
+            {
+                <p class="stat-card-subtitle">@ViewBag.Subtitle</p>
+            }
+        </div>
+        <div class="stat-card-icon">
+            <i class="@ViewBag.Icon"></i>
+        </div>
+    </div>
+</div>

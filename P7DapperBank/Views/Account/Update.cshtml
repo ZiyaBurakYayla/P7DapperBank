@@ -1,0 +1,33 @@
+@model P7DapperBank.Dtos.AccountDtos.GetByIdAccountDto
+@{
+    ViewData["Title"] = "Hesap Güncelle";
+}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Hesap Güncelle</h1>
+        <p class="page-subtitle" style="font-family:monospace">@Model.AccountNumber</p>
+    </div>
+    <a asp-action="Index" class="btn-secondary-custom"><i class="fa-solid fa-arrow-left"></i> Geri</a>
+</div>
+
+<div class="card form-page">
+    <div class="card-header"><i class="fa-solid fa-pen"></i> Hesap Bilgileri</div>
+    <div class="card-body">
+        <form asp-action="Update" method="post">
+            <input type="hidden" asp-for="AccountNumber" />
+            <div class="form-group">
+                <label class="form-label">Hesap Numarası</label>
+                <input asp-for="AccountNumber" class="form-control-custom" readonly style="opacity:0.6" />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Müşteri ID</label>
+                <input asp-for="CustomerId" type="number" class="form-control-custom" />
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn-primary-custom"><i class="fa-solid fa-check"></i> Güncelle</button>
+                <a asp-action="Index" class="btn-secondary-custom">İptal</a>
+            </div>
+        </form>
+    </div>
+</div>

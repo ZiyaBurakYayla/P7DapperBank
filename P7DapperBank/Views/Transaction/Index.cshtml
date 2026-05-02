@@ -1,0 +1,133 @@
+@model P7DapperBank.Models.PagedResult<P7DapperBank.Dtos.TransactionDtos.ResultTransactionDto>
+@{
+    ViewData["Title"] = "İşlemler";
+    var filter = ViewBag.Filter as FilterTransactionDto;
+    var types = ViewBag.TransactionTypes as List<P7DapperBank.Dtos.TransactionTypeDtos.ResultTransactionTypeDto>;
+    var filters = new Dictionary<string, string?> {
+        ["customerName"] = filter?.CustomerName,
+        ["accountNumber"] = filter?.AccountNumber,
+        ["status"] = filter?.Status,
+        ["currency"] = filter?.Currency,
+        ["typeId"] = filter?.TypeId?.ToString(),
+        ["amountMin"] = filter?.AmountMin?.ToString(),
+        ["amountMax"] = filter?.AmountMax?.ToString()
+    };
+}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">İşlemler</h1>
+        <p class="page-subtitle record-count">Toplam <strong>@Model.TotalCount.ToString("N0")</strong> kayıt</p>
+    </div>
+    <a asp-action="Create" class="btn-primary-custom"><i class="fa-solid fa-plus"></i> Yeni İşlem</a>
+</div>
+
+<div class="filter-bar">
+    <form method="get">
+        <div class="filter-field">
+            <label class="filter-label">Müşteri Adı</label>
+            <input class="filter-input" type="text" name="customerName" value="@filter?.CustomerName" placeholder="Müşteri adı..." style="width:160px" />
+        </div>
+        <div class="filter-field">
+            <label class="filter-label">Hesap No</label>
+            <input class="filter-input" type="text" name="accountNumber" value="@filter?.AccountNumber" placeholder="Hesap no..." style="width:160px" />
+        </div>
+        <div class="filter-field">
+            <label class="filter-label">Durum</label>
+            <select class="filter-input" name="status" style="width:140px">
+                <option value="">Tümü</option>
+                <option value="SUCCESS" selected="@(filter?.Status == "SUCCESS")">SUCCESS</option>
+                <option value="PENDING" selected="@(filter?.Status == "PENDING")">PENDING</option>
+                <option value="FAILED" selected="@(filter?.Status == "FAILED")">FAILED</option>
+            </select>
+        </div>
+        <div class="filter-field">
+            <label class="filter-label">Para Birimi</label>
+            <select class="filter-input" name="currency" style="width:110px">
+                <option value="">Tümü</option>
+                <option value="TRY" selected="@(filter?.Currency == "TRY")">TRY</option>
+                <option value="USD" selected="@(filter?.Currency == "USD")">USD</option>
+                <option value="EUR" selected="@(filter?.Currency == "EUR")">EUR</option>
+            </select>
+        </div>
+        <div class="filter-field">
+            <label class="filter-label">İşlem Tipi</label>
+            <select class="filter-input" name="typeId" style="width:130px">
+                <option value="">Tümü</option>
+                @if (types != null)
+                {
+                    @foreach (var t in types)
+                    {
+                        <option value="@t.TypeId" selected="@(filter?.TypeId == t.TypeId)">@t.TypeName</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="filter-field">
+            <label class="filter-label">Min Tutar</label>
+            <input class="filter-input" type="number" name="amountMin" value="@filter?.AmountMin" placeholder="0" style="width:100px" />
+        </div>
+        <div class="filter-field">
+            <label class="filter-label">Max Tutar</label>
+            <input class="filter-input" type="number" name="amountMax" value="@filter?.AmountMax" placeholder="∞" style="width:100px" />
+        </div>
+        <div class="filter-actions">
+            <button type="submit" class="btn-primary-custom"><i class="fa-solid fa-magnifying-glass"></i> Filtrele</button>
+            <a asp-action="Index" class="btn-secondary-custom"><i class="fa-solid fa-xmark"></i> Temizle</a>
+        </div>
+    </form>
+</div>
+
+<div class="card">
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>#ID</th><th>Müşteri</th><th>Hesap No</th><th>Tip</th><th>Tutar</th>
+                    <th>Durum</th><th>Para Birimi</th><th>Bakiye Sonrası</th><th>Tarih</th><th style="width:100px">İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Items.Any())
+                {
+                    <tr><td colspan="10"><div class="empty-state"><i class="fa-solid fa-arrow-right-arrow-left"></i>Kayıt bulunamadı</div></td></tr>
+                }
+                @foreach (var item in Model.Items)
+                {
+                    <tr>
+                        <td><span style="font-weight:600;color:var(--accent)">#@item.Id</span></td>
+                        <td>@(item.CustomerName ?? "-")</td>
+                        <td style="font-family:monospace;font-size:12px">@item.AccountNumber</td>
+                        <td>
+                            <span style="background:#eff6ff;color:#1d4ed8;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600">
+                                @(types?.FirstOrDefault(t => t.TypeId == item.TypeId)?.TypeName ?? item.TypeId.ToString())
+                            </span>
+                        </td>
+                        <td class="amount-positive">₺@item.Amount.ToString("N2")</td>
+                        <td>
+                            <span class="badge-status @(item.Status == "SUCCESS" ? "badge-completed" : item.Status == "PENDING" ? "badge-pending" : "badge-failed")">
+                                @item.Status
+                            </span>
+                        </td>
+                        <td>@item.Currency</td>
+                        <td class="amount-neutral">₺@item.BalanceAfter.ToString("N2")</td>
+                        <td style="color:var(--text-secondary);font-size:12px">@item.TransactionDate.ToString("dd.MM.yyyy")</td>
+                        <td>
+                            <div class="action-cell">
+                                <a asp-action="Update" asp-route-id="@item.Id" class="btn-edit-custom">
+                                    <i class="fa-solid fa-pen"></i>
+                                </a>
+                                <form asp-action="Delete" method="post" onsubmit="return confirm('Silmek istediğinizden emin misiniz?')">
+                                    <input type="hidden" name="id" value="@item.Id" />
+                                    <button type="submit" class="btn-danger-custom"><i class="fa-solid fa-trash"></i></button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@await Component.InvokeAsync("Pagination", new { currentPage = Model.Page, totalPages = Model.TotalPages, controllerName = "Transaction", actionName = "Index", filters = filters })

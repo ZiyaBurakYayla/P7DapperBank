@@ -1,0 +1,63 @@
+@model P7DapperBank.Models.PagedResult<P7DapperBank.Dtos.BankDtos.ResultBankDto>
+@{
+    ViewData["Title"] = "Bankalar";
+    var filter = ViewBag.Filter as FilterBankDto;
+    var filters = new Dictionary<string, string?> { ["bankName"] = filter?.BankName };
+}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Bankalar</h1>
+        <p class="page-subtitle record-count">Toplam <strong>@Model.TotalCount.ToString("N0")</strong> kayıt</p>
+    </div>
+    <a asp-action="Create" class="btn-primary-custom"><i class="fa-solid fa-plus"></i> Yeni Banka</a>
+</div>
+
+<div class="filter-bar">
+    <form method="get">
+        <div class="filter-field">
+            <label class="filter-label">Banka Adı</label>
+            <input class="filter-input" type="text" name="bankName" value="@filter?.BankName" placeholder="Banka ara..." />
+        </div>
+        <div class="filter-actions">
+            <button type="submit" class="btn-primary-custom"><i class="fa-solid fa-magnifying-glass"></i> Filtrele</button>
+            <a asp-action="Index" class="btn-secondary-custom"><i class="fa-solid fa-xmark"></i> Temizle</a>
+        </div>
+    </form>
+</div>
+
+<div class="card">
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr><th>ID</th><th>Banka Adı</th><th style="width:120px">İşlemler</th></tr>
+            </thead>
+            <tbody>
+                @if (!Model.Items.Any())
+                {
+                    <tr><td colspan="3"><div class="empty-state"><i class="fa-solid fa-landmark"></i>Kayıt bulunamadı</div></td></tr>
+                }
+                @foreach (var item in Model.Items)
+                {
+                    <tr>
+                        <td><span style="font-weight:600;color:var(--accent)">#@item.BankId</span></td>
+                        <td style="font-weight:500">@item.BankName</td>
+                        <td>
+                            <div class="action-cell">
+                                <a asp-action="Update" asp-route-id="@item.BankId" class="btn-edit-custom">
+                                    <i class="fa-solid fa-pen"></i>
+                                </a>
+                                <form asp-action="Delete" method="post" onsubmit="return confirm('Silmek istediğinizden emin misiniz?')">
+                                    <input type="hidden" name="id" value="@item.BankId" />
+                                    <button type="submit" class="btn-danger-custom"><i class="fa-solid fa-trash"></i></button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@await Component.InvokeAsync("Pagination", new { currentPage = Model.Page, totalPages = Model.TotalPages, controllerName = "Bank", actionName = "Index", filters = filters })

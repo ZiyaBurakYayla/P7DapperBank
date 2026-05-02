@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - P7DapperBank</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="admin-wrapper">
+
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <div class="sidebar-brand-icon">
+                    <i class="fa-solid fa-building-columns"></i>
+                </div>
+                <div class="sidebar-brand-text">P7DapperBank</div>
+            </div>
+
+            <div class="sidebar-divider"></div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section-label">Genel</div>
+                <a class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : "")"
+                   asp-controller="Home" asp-action="Index">
+                    <i class="fa-solid fa-gauge-high"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <div class="nav-section-label">Yönetim</div>
+                <a class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Customer" ? "active" : "")"
+                   asp-controller="Customer" asp-action="Index">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Müşteriler</span>
+                </a>
+                <a class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Account" ? "active" : "")"
+                   asp-controller="Account" asp-action="Index">
+                    <i class="fa-solid fa-credit-card"></i>
+                    <span>Hesaplar</span>
+                </a>
+                <a class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Bank" ? "active" : "")"
+                   asp-controller="Bank" asp-action="Index">
+                    <i class="fa-solid fa-landmark"></i>
+                    <span>Bankalar</span>
+                </a>
+                <a class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "TransactionType" ? "active" : "")"
+                   asp-controller="TransactionType" asp-action="Index">
+                    <i class="fa-solid fa-tags"></i>
+                    <span>İşlem Tipleri</span>
+                </a>
+
+                <div class="nav-section-label">İşlemler</div>
+                <a class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Transaction" ? "active" : "")"
+                   asp-controller="Transaction" asp-action="Index">
+                    <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                    <span>Tüm İşlemler</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="sidebar-footer-text">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    Yönetici Paneli
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main content -->
+        <div class="main-content">
+            <!-- Topbar -->
+            <header class="topbar">
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div class="topbar-breadcrumb">
+                    <span>@ViewData["Title"]</span>
+                </div>
+                <div class="topbar-right">
+                    <div class="topbar-date">
+                        <i class="fa-regular fa-calendar"></i>
+                        <span id="currentDate"></span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page content -->
+            <main class="content page-transition">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        // Tarih göster
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
+
+        // Sidebar toggle
+        document.getElementById('sidebarToggle').addEventListener('click', function () {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+            document.querySelector('.main-content').classList.toggle('expanded');
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

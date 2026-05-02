@@ -1,0 +1,65 @@
+@{
+    int currentPage = ViewBag.CurrentPage;
+    int totalPages = ViewBag.TotalPages;
+    string controllerName = ViewBag.ControllerName;
+    string actionName = ViewBag.ActionName;
+    var filters = (Dictionary<string, string?>)ViewBag.Filters;
+
+    string BuildUrl(int page)
+    {
+        var qs = new System.Text.StringBuilder();
+        qs.Append($"/{controllerName}/{actionName}?page={page}");
+        foreach (var kv in filters)
+            if (!string.IsNullOrEmpty(kv.Value))
+                qs.Append($"&{kv.Key}={Uri.EscapeDataString(kv.Value)}");
+        return qs.ToString();
+    }
+
+    int startPage = Math.Max(1, currentPage - 2);
+    int endPage = Math.Min(totalPages, currentPage + 2);
+}
+
+@if (totalPages > 1)
+{
+    <nav class="pagination-nav">
+        <ul class="pagination-list">
+            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                <a class="page-link" href="@BuildUrl(currentPage - 1)">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </a>
+            </li>
+
+            @if (startPage > 1)
+            {
+                <li class="page-item"><a class="page-link" href="@BuildUrl(1)">1</a></li>
+                @if (startPage > 2)
+                {
+                    <li class="page-item disabled"><span class="page-link">…</span></li>
+                }
+            }
+
+            @for (int i = startPage; i <= endPage; i++)
+            {
+                <li class="page-item @(i == currentPage ? "active" : "")">
+                    <a class="page-link" href="@BuildUrl(i)">@i</a>
+                </li>
+            }
+
+            @if (endPage < totalPages)
+            {
+                @if (endPage < totalPages - 1)
+                {
+                    <li class="page-item disabled"><span class="page-link">…</span></li>
+                }
+                <li class="page-item"><a class="page-link" href="@BuildUrl(totalPages)">@totalPages</a></li>
+            }
+
+            <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                <a class="page-link" href="@BuildUrl(currentPage + 1)">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </a>
+            </li>
+        </ul>
+        <p class="pagination-info">Sayfa @currentPage / @totalPages</p>
+    </nav>
+}

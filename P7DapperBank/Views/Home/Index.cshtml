@@ -1,0 +1,87 @@
+@model P7DapperBank.Models.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+    var typeLabels = System.Text.Json.JsonSerializer.Serialize(Model.TypeStats.Select(x => x.TypeName).ToList());
+    var typeCounts = System.Text.Json.JsonSerializer.Serialize(Model.TypeStats.Select(x => x.Count).ToList());
+    var monthLabels = System.Text.Json.JsonSerializer.Serialize(Model.MonthlyStats.Select(x => x.Label).ToList());
+    var monthCounts = System.Text.Json.JsonSerializer.Serialize(Model.MonthlyStats.Select(x => x.Count).ToList());
+}
+
+<div class="stat-grid">
+    @await Component.InvokeAsync("StatCard", new { title = "Toplam Müşteri", value = Model.TotalCustomers.ToString("N0"), icon = "fa-solid fa-users", colorClass = "stat-blue" })
+    @await Component.InvokeAsync("StatCard", new { title = "Toplam Hesap", value = Model.TotalAccounts.ToString("N0"), icon = "fa-solid fa-credit-card", colorClass = "stat-green" })
+    @await Component.InvokeAsync("StatCard", new { title = "Toplam İşlem", value = Model.TotalTransactions.ToString("N0"), icon = "fa-solid fa-arrow-right-arrow-left", colorClass = "stat-purple" })
+    @await Component.InvokeAsync("StatCard", new { title = "Tamamlanan Hacim", value = "₺" + Model.TotalAmount.ToString("N0"), icon = "fa-solid fa-sack-dollar", colorClass = "stat-orange", subtitle = "Tamamlanan işlemler" })
+</div>
+
+<div class="charts-grid">
+    <div class="card">
+        <div class="card-header">
+            <span><i class="fa-solid fa-chart-pie"></i>İşlem Tipi Dağılımı</span>
+        </div>
+        <div class="card-body" style="height:280px;display:flex;align-items:center;justify-content:center;">
+            <canvas id="typeChart"></canvas>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <span><i class="fa-solid fa-chart-bar"></i>Aylık İşlem Hacmi</span>
+        </div>
+        <div class="card-body" style="height:280px;">
+            <canvas id="monthChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <span><i class="fa-solid fa-clock-rotate-left"></i>Son İşlemler</span>
+        <a asp-controller="Transaction" asp-action="Index" class="btn-primary-custom" style="font-size:12px;padding:6px 14px;">
+            Tümünü Gör
+        </a>
+    </div>
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>#ID</th><th>Hesap No</th><th>Tip</th><th>Tutar</th><th>Durum</th><th>Para Birimi</th><th>Tarih</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var t in Model.RecentTransactions)
+                {
+                    <tr>
+                        <td><span style="font-weight:600;color:var(--accent)">#@t.Id</span></td>
+                        <td style="font-family:monospace;font-size:12px">@t.AccountNumber</td>
+                        <td>@t.TypeName</td>
+                        <td class="amount-positive">₺@t.Amount.ToString("N2")</td>
+                        <td>
+                            <span class="badge-status @(t.Status == "SUCCESS" ? "badge-completed" : t.Status == "PENDING" ? "badge-pending" : "badge-failed")">
+                                @t.Status
+                            </span>
+                        </td>
+                        <td>@t.Currency</td>
+                        <td style="color:var(--text-secondary)">@t.TransactionDate.ToString("dd.MM.yyyy HH:mm")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const typeColors = ['#3b82f6','#10b981','#8b5cf6','#f59e0b','#ef4444'];
+        new Chart(document.getElementById('typeChart'), {
+            type: 'doughnut',
+            data: { labels: @Html.Raw(typeLabels), datasets: [{ data: @Html.Raw(typeCounts), backgroundColor: typeColors, borderWidth: 2, borderColor: '#fff' }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { padding: 14, font: { size: 12 } } } }, cutout: '60%' }
+        });
+        new Chart(document.getElementById('monthChart'), {
+            type: 'bar',
+            data: { labels: @Html.Raw(monthLabels), datasets: [{ label: 'İşlem Sayısı', data: @Html.Raw(monthCounts), backgroundColor: 'rgba(59,130,246,0.15)', borderColor: '#3b82f6', borderWidth: 2, borderRadius: 6 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#f1f5f9' } }, x: { grid: { display: false }, ticks: { maxRotation: 45 } } } }
+        });
+    </script>
+}

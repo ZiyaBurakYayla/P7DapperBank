@@ -1,0 +1,26 @@
+@model P7DapperBank.Dtos.TransactionTypeDtos.CreateTransactionTypeDto
+@{ ViewData["Title"] = "Yeni İşlem Tipi"; }
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Yeni İşlem Tipi Ekle</h1>
+        <p class="page-subtitle">Sisteme yeni bir işlem tipi oluştur</p>
+    </div>
+    <a asp-action="Index" class="btn-secondary-custom"><i class="fa-solid fa-arrow-left"></i> Geri</a>
+</div>
+
+<div class="card form-page">
+    <div class="card-header"><i class="fa-solid fa-tags"></i> İşlem Tipi Bilgileri</div>
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            <div class="form-group">
+                <label class="form-label">Tip Adı</label>
+                <input asp-for="TypeName" class="form-control-custom" placeholder="Örn: HAVALE, EFT, POS" />
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn-primary-custom"><i class="fa-solid fa-check"></i> Kaydet</button>
+                <a asp-action="Index" class="btn-secondary-custom">İptal</a>
+            </div>
+        </form>
+    </div>
+</div>

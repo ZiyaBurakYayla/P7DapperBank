@@ -1,0 +1,26 @@
+@model P7DapperBank.Dtos.BankDtos.CreateBankDto
+@{ ViewData["Title"] = "Yeni Banka"; }
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Yeni Banka Ekle</h1>
+        <p class="page-subtitle">Sisteme yeni bir banka kaydı oluştur</p>
+    </div>
+    <a asp-action="Index" class="btn-secondary-custom"><i class="fa-solid fa-arrow-left"></i> Geri</a>
+</div>
+
+<div class="card form-page">
+    <div class="card-header"><i class="fa-solid fa-landmark"></i> Banka Bilgileri</div>
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            <div class="form-group">
+                <label class="form-label">Banka Adı</label>
+                <input asp-for="BankName" class="form-control-custom" placeholder="Banka adını girin" />
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn-primary-custom"><i class="fa-solid fa-check"></i> Kaydet</button>
+                <a asp-action="Index" class="btn-secondary-custom">İptal</a>
+            </div>
+        </form>
+    </div>
+</div>
